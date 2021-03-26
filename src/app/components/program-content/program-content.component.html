@@ -1,0 +1,12 @@
+<mat-progress-bar
+  *ngIf="loading$ | async"
+  class="progress-bar"
+  mode="indeterminate"
+></mat-progress-bar>
+
+<ng-container *ngIf="activities$ | async as activities">
+  <app-activities-list
+    class="activities-list"
+    [activities]="activities"
+  ></app-activities-list>
+</ng-container>

@@ -1,0 +1,16 @@
+.activity {
+  display: flex;
+
+  &-name {
+    flex: 0 0 30%;
+  }
+
+  &-start-date,
+  &-end-date {
+    flex: 0 0 20%;
+  }
+
+  &-description {
+    flex: 0 0 30%;
+  }
+}

@@ -1,0 +1,20 @@
+@import '~src/styles/mixins';
+
+.item {
+  &-header {
+    &-title,
+    &-description {
+      @include textEllipsis;
+      display: inline-block;
+      flex: 1 1 50%;
+    }
+
+    &-description {
+      ::ng-deep {
+        p {
+          display: inline;
+        }
+      }
+    }
+  }
+}

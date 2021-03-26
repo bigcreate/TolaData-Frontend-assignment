@@ -1,0 +1,22 @@
+<mat-accordion>
+  <mat-expansion-panel
+    *ngFor="let program of programs; trackBy: trackByProgramId"
+    class="item"
+    (opened)="openProgram(program.id)"
+    (afterCollapse)="closeProgram(program.id)"
+  >
+    <mat-expansion-panel-header class="item-header">
+      <mat-panel-title class="item-header-title">{{
+        program.name
+      }}</mat-panel-title>
+      <mat-panel-description class="item-header-description">
+        <p [outerHTML]="program.description"></p>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <app-program-content
+      *ngIf="isProgramOpened(program.id)"
+      [program]="program"
+    ></app-program-content>
+  </mat-expansion-panel>
+</mat-accordion>
