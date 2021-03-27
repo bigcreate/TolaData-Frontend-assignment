@@ -1,0 +1,17 @@
+.add-activity {
+  text-align: center;
+  width: 100%;
+
+  &-btn {
+    position: relative;
+    top: 10px;
+  }
+
+  &-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: -10px;
+  }
+}

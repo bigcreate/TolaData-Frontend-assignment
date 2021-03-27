@@ -2,3 +2,7 @@
   *ngFor="let activity of activities; trackBy: trackByActivityId"
   [activity]="activity"
 ></app-activity-item>
+
+<div *ngIf="activities.length === 0" class="empty-list">
+  Activities list is empty
+</div>

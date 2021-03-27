@@ -10,3 +10,74 @@
     [activities]="activities"
   ></app-activities-list>
 </ng-container>
+
+<div class="add-activity">
+  <button
+    *ngIf="isStateDefault()"
+    class="add-activity-btn"
+    mat-mini-fab
+    color="primary"
+    aria-label="Add new activity"
+    (click)="setStateToAddingActivity()"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <ng-container *ngIf="isStateAddingActivity()">
+    <form class="add-activity-form form" [formGroup]="newActivityForm">
+      <mat-form-field class="form-field">
+        <mat-label>Name</mat-label>
+        <input
+          type="text"
+          matInput
+          [formControl]="nameFormControl"
+          placeholder="Name"
+        />
+        <mat-error *ngIf="nameFormControl.hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <mat-label>Choose a start date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="startDatePicker"
+          [formControl]="startDateFormControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #startDatePicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field class="form-field">
+        <mat-label>Choose a end date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="endDatePicker"
+          [formControl]="endDateFormControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker #endDatePicker></mat-datepicker>
+      </mat-form-field>
+    </form>
+
+    <div class="add-activity">
+      <button
+        [disabled]="newActivityForm.invalid"
+        class="add-activity-btn"
+        mat-mini-fab
+        color="primary"
+        aria-label="Save new activity"
+        (click)="saveNewActivity()"
+      >
+        <mat-icon>save</mat-icon>
+      </button>
+    </div>
+  </ng-container>
+</div>
