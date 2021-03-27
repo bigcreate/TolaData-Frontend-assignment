@@ -24,16 +24,16 @@
   </button>
 
   <ng-container *ngIf="isStateAddingActivity()">
-    <form class="add-activity-form form" [formGroup]="newActivityForm">
+    <form class="add-activity-form form" [formGroup]="newActivityForm!">
       <mat-form-field class="form-field">
         <mat-label>Name</mat-label>
         <input
           type="text"
           matInput
-          [formControl]="nameFormControl"
+          [formControl]="nameFormControl!"
           placeholder="Name"
         />
-        <mat-error *ngIf="nameFormControl.hasError('required')">
+        <mat-error *ngIf="nameFormControl!.hasError('required')">
           Name is <strong>required</strong>
         </mat-error>
       </mat-form-field>
@@ -43,7 +43,7 @@
         <input
           matInput
           [matDatepicker]="startDatePicker"
-          [formControl]="startDateFormControl"
+          [formControl]="startDateFormControl!"
         />
         <mat-datepicker-toggle
           matSuffix
@@ -57,7 +57,7 @@
         <input
           matInput
           [matDatepicker]="endDatePicker"
-          [formControl]="endDateFormControl"
+          [formControl]="endDateFormControl!"
         />
         <mat-datepicker-toggle
           matSuffix
@@ -69,7 +69,15 @@
 
     <div class="add-activity">
       <button
-        [disabled]="newActivityForm.invalid"
+        class="add-activity-btn"
+        mat-mini-fab
+        aria-label="Cancel"
+        (click)="cancelCreatingNewActivity()"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+      <button
+        [disabled]="newActivityForm!.invalid"
         class="add-activity-btn"
         mat-mini-fab
         color="primary"

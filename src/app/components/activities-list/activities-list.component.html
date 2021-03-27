@@ -1,7 +1,7 @@
-<app-activity-item
-  *ngFor="let activity of activities; trackBy: trackByActivityId"
-  [activity]="activity"
-></app-activity-item>
+<ng-container *ngFor="let activity of activities; trackBy: trackByActivityId">
+  <app-activity-item [activity]="activity"></app-activity-item>
+  <mat-divider></mat-divider>
+</ng-container>
 
 <div *ngIf="activities.length === 0" class="empty-list">
   Activities list is empty

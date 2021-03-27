@@ -4,13 +4,7 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import {
-  AbstractControl,
-  Form,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Activity } from 'src/app/interfaces/activity';
@@ -38,10 +32,10 @@ export class ProgramContentComponent {
   }
 
   activities$: Observable<Activity[]>;
-  nameFormControl: FormControl;
-  startDateFormControl: FormControl;
-  endDateFormControl: FormControl;
-  newActivityForm: FormGroup;
+  nameFormControl: FormControl | undefined;
+  startDateFormControl: FormControl | undefined;
+  endDateFormControl: FormControl | undefined;
+  newActivityForm: FormGroup | undefined;
 
   get loading$(): Observable<boolean> {
     return this.loadingSubject.asObservable();
@@ -66,15 +60,6 @@ export class ProgramContentComponent {
       tap(() => this.loadingSubject.next(false)),
       tap(() => this.cdr.detectChanges()),
     );
-
-    this.nameFormControl = new FormControl('', [Validators.required]);
-    this.startDateFormControl = new FormControl();
-    this.endDateFormControl = new FormControl();
-    this.newActivityForm = new FormGroup({
-      name: this.nameFormControl,
-      expected_start_date: this.startDateFormControl,
-      expected_end_date: this.endDateFormControl,
-    });
   }
 
   isStateDefault(): boolean {
@@ -85,12 +70,32 @@ export class ProgramContentComponent {
     return this.state === ProgramState.AddingActivity;
   }
 
+  createNewActivityForm(): void {
+    this.nameFormControl = new FormControl('', [Validators.required]);
+    this.startDateFormControl = new FormControl();
+    this.endDateFormControl = new FormControl();
+    this.newActivityForm = new FormGroup({
+      name: this.nameFormControl,
+      expected_start_date: this.startDateFormControl,
+      expected_end_date: this.endDateFormControl,
+    });
+  }
+
   setStateToAddingActivity(): void {
     this.state = ProgramState.AddingActivity;
+    this.createNewActivityForm();
+  }
+
+  cancelCreatingNewActivity(): void {
+    this.state = ProgramState.Default;
   }
 
   saveNewActivity(): void {
-    if (this.newActivityForm.invalid || !this.programUrl) {
+    if (
+      !this.newActivityForm ||
+      this.newActivityForm.invalid ||
+      !this.programUrl
+    ) {
       return;
     }
 
@@ -106,6 +111,8 @@ export class ProgramContentComponent {
       expected_end_date:
         expected_end_date && expected_end_date.format('YYYY-MM-DD'),
     };
+
+    this.state = ProgramState.Default;
 
     // temporary solution
     this.programsService.addActivity(data, this.programUrl).subscribe(() => {
