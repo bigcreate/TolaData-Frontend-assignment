@@ -5,5 +5,6 @@ export interface Activity {
   id: number;
   level2_uuid: string;
   name: string;
+  url: string;
   workflowlevel1: string;
 }

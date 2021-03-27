@@ -25,4 +25,22 @@ export class ActivitiesService {
       },
     );
   }
+
+  addActivity(activity: Partial<Activity>): Observable<Activity> {
+    return this.http.post<Activity>(
+      'https://dev-api.toladata.io/api/workflowlevel2/',
+      activity,
+    );
+  }
+
+  changeActivity(
+    activityUrl: string,
+    activity: Activity,
+  ): Observable<Activity> {
+    return this.http.put<Activity>(activityUrl, activity);
+  }
+
+  deleteActivity(activityUrl: string): Observable<void> {
+    return this.http.delete<void>(activityUrl);
+  }
 }

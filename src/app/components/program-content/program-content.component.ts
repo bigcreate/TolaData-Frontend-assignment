@@ -10,7 +10,6 @@ import { catchError, switchMap, tap } from 'rxjs/operators';
 import { Activity } from 'src/app/interfaces/activity';
 import { Program } from 'src/app/interfaces/program';
 import { ActivitiesService } from 'src/app/services/activities.service';
-import { ProgramsService } from 'src/app/services/programs.service';
 
 enum ProgramState {
   Default,
@@ -27,7 +26,6 @@ export class ProgramContentComponent {
   @Input()
   set program(value: Program) {
     this.programData = value;
-    this.programUrl = value.url;
     this.programSubject.next(value);
   }
 
@@ -42,14 +40,12 @@ export class ProgramContentComponent {
   }
 
   private programData: Program | undefined;
-  private programUrl: string | undefined;
   private state = ProgramState.Default;
   private programSubject = new ReplaySubject<Program>();
   private loadingSubject = new BehaviorSubject<boolean>(false);
 
   constructor(
     private readonly activitiesService: ActivitiesService,
-    private readonly programsService: ProgramsService,
     private readonly cdr: ChangeDetectorRef,
   ) {
     this.activities$ = this.programSubject.asObservable().pipe(
@@ -94,7 +90,7 @@ export class ProgramContentComponent {
     if (
       !this.newActivityForm ||
       this.newActivityForm.invalid ||
-      !this.programUrl
+      !this.programData
     ) {
       return;
     }
@@ -110,15 +106,33 @@ export class ProgramContentComponent {
         expected_start_date && expected_start_date.format('YYYY-MM-DD'),
       expected_end_date:
         expected_end_date && expected_end_date.format('YYYY-MM-DD'),
+      workflowlevel1: this.programData.url,
     };
 
     this.state = ProgramState.Default;
 
-    // temporary solution
-    this.programsService.addActivity(data, this.programUrl).subscribe(() => {
+    this.activitiesService.addActivity(data).subscribe(() => {
+      // temporary solution
       if (this.programData) {
         this.program = this.programData;
       }
     });
+  }
+
+  onChangeDescription(activity: Activity, description: string): void {
+    const modifiedActivity: Activity = { ...activity, description };
+
+    this.activitiesService
+      .changeActivity(activity.url, modifiedActivity)
+      .subscribe(() => {
+        // temporary solution
+        if (this.programData) {
+          this.program = this.programData;
+        }
+      });
+  }
+
+  trackByActivityId(index: number, item: Activity): number {
+    return item.id;
   }
 }

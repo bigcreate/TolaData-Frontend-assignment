@@ -1,5 +1,16 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+} from '@angular/core';
 import { Activity } from 'src/app/interfaces/activity';
+
+enum ActivityState {
+  Default,
+  Editing,
+}
 
 @Component({
   selector: 'app-activity-item',
@@ -10,4 +21,30 @@ import { Activity } from 'src/app/interfaces/activity';
 export class ActivityItemComponent {
   @Input()
   activity: Activity | undefined;
+
+  @Output()
+  changeDescription = new EventEmitter<string>();
+
+  private state = ActivityState.Default;
+
+  isStateDefault(): boolean {
+    return this.state === ActivityState.Default;
+  }
+
+  isStateEditing(): boolean {
+    return this.state === ActivityState.Editing;
+  }
+
+  editDescription(): void {
+    this.state = ActivityState.Editing;
+  }
+
+  cancelEditingDescription(): void {
+    this.state = ActivityState.Default;
+  }
+
+  saveDescription(value: string = ''): void {
+    this.state = ActivityState.Default;
+    this.changeDescription.emit(value);
+  }
 }

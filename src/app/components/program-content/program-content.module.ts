@@ -13,10 +13,11 @@ import {
   MatDateFormats,
 } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ActivitiesListModule } from 'src/app/components/activities-list/activities-list.module';
+import { ActivityItemModule } from 'src/app/components/activity-item/activity-item.module';
 import { ProgramContentComponent } from './program-content.component';
 
 export const MY_FORMATS: MatDateFormats = {
@@ -36,13 +37,14 @@ export const MY_FORMATS: MatDateFormats = {
   imports: [
     CommonModule,
     MatProgressBarModule,
-    ActivitiesListModule,
     MatIconModule,
     MatButtonModule,
     ReactiveFormsModule,
     MatInputModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    MatDividerModule,
+    ActivityItemModule,
   ],
   providers: [
     {

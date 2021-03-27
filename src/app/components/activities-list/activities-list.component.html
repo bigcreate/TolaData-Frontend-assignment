@@ -1,5 +1,8 @@
 <ng-container *ngFor="let activity of activities; trackBy: trackByActivityId">
-  <app-activity-item [activity]="activity"></app-activity-item>
+  <app-activity-item
+    [activity]="activity"
+    (changeDescription)="onChangeDescription($event, activity.url)"
+  ></app-activity-item>
   <mat-divider></mat-divider>
 </ng-container>
 

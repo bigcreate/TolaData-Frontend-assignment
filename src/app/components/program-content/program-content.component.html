@@ -5,10 +5,17 @@
 ></mat-progress-bar>
 
 <ng-container *ngIf="activities$ | async as activities">
-  <app-activities-list
-    class="activities-list"
-    [activities]="activities"
-  ></app-activities-list>
+  <div *ngFor="let activity of activities; trackBy: trackByActivityId">
+    <app-activity-item
+      [activity]="activity"
+      (changeDescription)="onChangeDescription(activity, $event)"
+    ></app-activity-item>
+    <mat-divider></mat-divider>
+  </div>
+
+  <div *ngIf="activities.length === 0" class="empty-list">
+    Activities list is empty
+  </div>
 </ng-container>
 
 <div class="add-activity">

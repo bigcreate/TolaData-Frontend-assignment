@@ -1,6 +1,60 @@
 <div *ngIf="activity" class="activity">
-  <div class="activity-name">{{activity.name}}</div>
-  <div class="activity-start-date">{{activity.expected_start_date}}</div>
-  <div class="activity-end-date">{{activity.expected_end_date}}</div>
-  <div class="activity-description">{{activity.description}}</div>
+  <div class="activity-property activity-name">{{ activity.name }}</div>
+  <div class="activity-property activity-start-date">
+    {{ activity.expected_start_date }}
+  </div>
+  <div class="activity-property activity-end-date">
+    {{ activity.expected_end_date }}
+  </div>
+  <ng-container *ngIf="isStateDefault()">
+    <div class="activity-property activity-description">
+      {{ activity.description }}
+    </div>
+    <button
+      class="activity-button"
+      mat-icon-button
+      color="primary"
+      aria-label="Edit description"
+      (click)="editDescription()"
+    >
+      <mat-icon>edit_note</mat-icon>
+    </button>
+    <button
+      class="activity-button"
+      mat-icon-button
+      color="primary"
+      aria-label="Delete activity"
+    >
+      <mat-icon>delete_forever</mat-icon>
+    </button>
+  </ng-container>
+
+  <ng-container *ngIf="isStateEditing()">
+    <mat-form-field class="activity-property activity-description">
+      <mat-label>Add a description</mat-label>
+      <textarea
+        #description
+        matInput
+        placeholder="Add a description"
+        [value]="activity.description"
+      ></textarea>
+    </mat-form-field>
+    <button
+      class="activity-button"
+      mat-icon-button
+      aria-label="Cancel"
+      (click)="cancelEditingDescription()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <button
+      class="activity-button"
+      mat-icon-button
+      color="primary"
+      aria-label="Save description"
+      (click)="saveDescription(description.value)"
+    >
+      <mat-icon>save</mat-icon>
+    </button>
+  </ng-container>
 </div>
