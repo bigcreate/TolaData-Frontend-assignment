@@ -9,6 +9,7 @@
     <app-activity-item
       [activity]="activity"
       (changeDescription)="onChangeDescription(activity, $event)"
+      (delete)="onDeleteActivity(activity.url)"
     ></app-activity-item>
     <mat-divider></mat-divider>
   </div>

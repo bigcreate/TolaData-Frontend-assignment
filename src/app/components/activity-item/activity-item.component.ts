@@ -25,6 +25,9 @@ export class ActivityItemComponent {
   @Output()
   changeDescription = new EventEmitter<string>();
 
+  @Output()
+  delete = new EventEmitter<void>();
+
   private state = ActivityState.Default;
 
   isStateDefault(): boolean {
@@ -46,5 +49,9 @@ export class ActivityItemComponent {
   saveDescription(value: string = ''): void {
     this.state = ActivityState.Default;
     this.changeDescription.emit(value);
+  }
+
+  deleteActivity(): void {
+    this.delete.emit();
   }
 }

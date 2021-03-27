@@ -132,6 +132,15 @@ export class ProgramContentComponent {
       });
   }
 
+  onDeleteActivity(activityUrl: string): void {
+    this.activitiesService.deleteActivity(activityUrl).subscribe(() => {
+      // temporary solution
+      if (this.programData) {
+        this.program = this.programData;
+      }
+    });
+  }
+
   trackByActivityId(index: number, item: Activity): number {
     return item.id;
   }
