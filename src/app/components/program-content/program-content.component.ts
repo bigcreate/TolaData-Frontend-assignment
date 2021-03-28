@@ -1,15 +1,22 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { catchError, switchMap, tap } from 'rxjs/operators';
-import { Activity } from 'src/app/interfaces/activity';
+import { Store } from '@ngrx/store';
+import { Observable, ReplaySubject } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
+import { Activity, NewActivity } from 'src/app/interfaces/activity';
 import { Program } from 'src/app/interfaces/program';
+import { AppState } from 'src/app/interfaces/state';
 import { ActivitiesService } from 'src/app/services/activities.service';
+import {
+  changeActivity,
+  createActivity,
+  getActivitiesByProgramId,
+  removeActivity,
+} from 'src/app/stores/activity/activity.actions';
+import {
+  selectActivitiesByProgram,
+  selectPendingByProgramId,
+} from 'src/app/stores/activity/activity.selectors';
 
 enum ProgramState {
   Default,
@@ -27,35 +34,32 @@ export class ProgramContentComponent {
   set program(value: Program) {
     this.programData = value;
     this.programSubject.next(value);
+
+    this.store.dispatch(getActivitiesByProgramId({ programId: value.id }));
   }
 
   activities$: Observable<Activity[]>;
+  loading$: Observable<boolean>;
   nameFormControl: FormControl | undefined;
   startDateFormControl: FormControl | undefined;
   endDateFormControl: FormControl | undefined;
   newActivityForm: FormGroup | undefined;
 
-  get loading$(): Observable<boolean> {
-    return this.loadingSubject.asObservable();
-  }
-
   private programData: Program | undefined;
   private state = ProgramState.Default;
-  private programSubject = new ReplaySubject<Program>();
-  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private programSubject = new ReplaySubject<Program>(1);
 
   constructor(
     private readonly activitiesService: ActivitiesService,
-    private readonly cdr: ChangeDetectorRef,
+    private readonly store: Store<AppState>,
   ) {
     this.activities$ = this.programSubject.asObservable().pipe(
-      tap(() => this.loadingSubject.next(true)),
-      tap(() => this.cdr.detectChanges()),
-      switchMap((program) => this.activitiesService.getByProgramId(program.id)),
-      catchError(() => []), // show notification
-      tap(() => this.loadingSubject.next(false)),
-      tap(() => this.cdr.detectChanges()),
+      filter((program) => !!program),
+      switchMap((program) => this.store.select(selectActivitiesByProgram(program.url))),
     );
+    this.loading$ = this.programSubject
+      .asObservable()
+      .pipe(switchMap((program) => this.store.select(selectPendingByProgramId(program.id))));
   }
 
   isStateDefault(): boolean {
@@ -87,58 +91,41 @@ export class ProgramContentComponent {
   }
 
   saveNewActivity(): void {
-    if (
-      !this.newActivityForm ||
-      this.newActivityForm.invalid ||
-      !this.programData
-    ) {
+    if (!this.newActivityForm || this.newActivityForm.invalid || !this.programData) {
       return;
     }
 
-    const {
+    const { name, expected_start_date, expected_end_date } = this.newActivityForm.value;
+    const data: NewActivity = {
       name,
-      expected_start_date,
-      expected_end_date,
-    } = this.newActivityForm.value;
-    const data: Partial<Activity> = {
-      name,
-      expected_start_date:
-        expected_start_date && expected_start_date.format('YYYY-MM-DD'),
-      expected_end_date:
-        expected_end_date && expected_end_date.format('YYYY-MM-DD'),
+      expected_start_date: expected_start_date && expected_start_date.format('YYYY-MM-DD'),
+      expected_end_date: expected_end_date && expected_end_date.format('YYYY-MM-DD'),
       workflowlevel1: this.programData.url,
     };
 
     this.state = ProgramState.Default;
-
-    this.activitiesService.addActivity(data).subscribe(() => {
-      // temporary solution
-      if (this.programData) {
-        this.program = this.programData;
-      }
-    });
+    this.store.dispatch(createActivity({ activity: data, programId: this.programData.id }));
   }
 
   onChangeDescription(activity: Activity, description: string): void {
+    if (!this.programData) {
+      return;
+    }
     const modifiedActivity: Activity = { ...activity, description };
-
-    this.activitiesService
-      .changeActivity(activity.url, modifiedActivity)
-      .subscribe(() => {
-        // temporary solution
-        if (this.programData) {
-          this.program = this.programData;
-        }
-      });
+    this.store.dispatch(
+      changeActivity({
+        activityUrl: activity.url,
+        activity: modifiedActivity,
+        programId: this.programData.id,
+      }),
+    );
   }
 
-  onDeleteActivity(activityUrl: string): void {
-    this.activitiesService.deleteActivity(activityUrl).subscribe(() => {
-      // temporary solution
-      if (this.programData) {
-        this.program = this.programData;
-      }
-    });
+  onDeleteActivity(id: number, activityUrl: string): void {
+    if (!this.programData) {
+      return;
+    }
+    this.store.dispatch(removeActivity({ id, activityUrl, programId: this.programData.id }));
   }
 
   trackByActivityId(index: number, item: Activity): number {

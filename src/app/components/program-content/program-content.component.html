@@ -9,14 +9,12 @@
     <app-activity-item
       [activity]="activity"
       (changeDescription)="onChangeDescription(activity, $event)"
-      (delete)="onDeleteActivity(activity.url)"
+      (delete)="onDeleteActivity(activity.id, activity.url)"
     ></app-activity-item>
     <mat-divider></mat-divider>
   </div>
 
-  <div *ngIf="activities.length === 0" class="empty-list">
-    Activities list is empty
-  </div>
+  <div *ngIf="activities.length === 0" class="empty-list">Activities list is empty</div>
 </ng-container>
 
 <div class="add-activity">
@@ -35,12 +33,7 @@
     <form class="add-activity-form form" [formGroup]="newActivityForm!">
       <mat-form-field class="form-field">
         <mat-label>Name</mat-label>
-        <input
-          type="text"
-          matInput
-          [formControl]="nameFormControl!"
-          placeholder="Name"
-        />
+        <input type="text" matInput [formControl]="nameFormControl!" placeholder="Name" />
         <mat-error *ngIf="nameFormControl!.hasError('required')">
           Name is <strong>required</strong>
         </mat-error>
@@ -48,29 +41,15 @@
 
       <mat-form-field class="form-field">
         <mat-label>Choose a start date</mat-label>
-        <input
-          matInput
-          [matDatepicker]="startDatePicker"
-          [formControl]="startDateFormControl!"
-        />
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="startDatePicker"
-        ></mat-datepicker-toggle>
+        <input matInput [matDatepicker]="startDatePicker" [formControl]="startDateFormControl!" />
+        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #startDatePicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field class="form-field">
         <mat-label>Choose a end date</mat-label>
-        <input
-          matInput
-          [matDatepicker]="endDatePicker"
-          [formControl]="endDateFormControl!"
-        />
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="endDatePicker"
-        ></mat-datepicker-toggle>
+        <input matInput [matDatepicker]="endDatePicker" [formControl]="endDateFormControl!" />
+        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
         <mat-datepicker #endDatePicker></mat-datepicker>
       </mat-form-field>
     </form>

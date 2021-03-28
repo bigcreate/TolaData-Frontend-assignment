@@ -1,10 +1,7 @@
-<ng-container *ngIf="programs$ | async as programs; else spinnerTmpl">
-  <app-program-list
-    class="programs-list"
-    [programs]="programs"
-  ></app-program-list>
+<ng-container *ngIf="programs$ | async as programs">
+  <app-program-list class="programs-list" [programs]="programs"></app-program-list>
 </ng-container>
 
-<ng-template #spinnerTmpl>
+<ng-container *ngIf="loading$ | async">
   <mat-spinner class="spinner" [diameter]="50"></mat-spinner>
-</ng-template>
+</ng-container>

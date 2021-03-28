@@ -6,5 +6,10 @@ export interface Activity {
   level2_uuid: string;
   name: string;
   url: string;
-  workflowlevel1: string;
+  workflowlevel1?: string;
 }
+
+export type NewActivity = Pick<
+  Activity,
+  'name' | 'expected_start_date' | 'expected_end_date' | 'workflowlevel1'
+>;

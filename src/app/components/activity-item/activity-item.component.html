@@ -7,9 +7,7 @@
     {{ activity.expected_end_date }}
   </div>
   <ng-container *ngIf="isStateDefault()">
-    <div class="activity-property activity-description">
-      {{ activity.description }}
-    </div>
+    <div class="activity-property activity-description" [innerHTML]="activity.description"></div>
     <button
       class="activity-button"
       mat-icon-button
