@@ -14,7 +14,6 @@ export class ProgramListComponent {
   private programsVisibilityStatus = new Map<number, boolean>();
 
   isProgramOpened(programId: number): boolean {
-    console.log(programId, !!this.programsVisibilityStatus.get(programId));
     return !!this.programsVisibilityStatus.get(programId);
   }
 
