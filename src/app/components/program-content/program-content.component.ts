@@ -6,7 +6,6 @@ import { filter, switchMap } from 'rxjs/operators';
 import { Activity, NewActivity } from 'src/app/interfaces/activity';
 import { Program } from 'src/app/interfaces/program';
 import { AppState } from 'src/app/interfaces/state';
-import { ActivitiesService } from 'src/app/services/activities.service';
 import {
   changeActivity,
   createActivity,
@@ -49,17 +48,20 @@ export class ProgramContentComponent {
   private state = ProgramState.Default;
   private programSubject = new ReplaySubject<Program>(1);
 
-  constructor(
-    private readonly activitiesService: ActivitiesService,
-    private readonly store: Store<AppState>,
-  ) {
+  constructor(private readonly store: Store<AppState>) {
     this.activities$ = this.programSubject.asObservable().pipe(
       filter((program) => !!program),
-      switchMap((program) => this.store.select(selectActivitiesByProgram(program.url))),
+      switchMap((program) =>
+        this.store.select(selectActivitiesByProgram, { programUrl: program.url }),
+      ),
     );
     this.loading$ = this.programSubject
       .asObservable()
-      .pipe(switchMap((program) => this.store.select(selectPendingByProgramId(program.id))));
+      .pipe(
+        switchMap((program) =>
+          this.store.select(selectPendingByProgramId, { programId: program.id }),
+        ),
+      );
   }
 
   isStateDefault(): boolean {
@@ -68,17 +70,6 @@ export class ProgramContentComponent {
 
   isStateAddingActivity(): boolean {
     return this.state === ProgramState.AddingActivity;
-  }
-
-  createNewActivityForm(): void {
-    this.nameFormControl = new FormControl('', [Validators.required]);
-    this.startDateFormControl = new FormControl();
-    this.endDateFormControl = new FormControl();
-    this.newActivityForm = new FormGroup({
-      name: this.nameFormControl,
-      expected_start_date: this.startDateFormControl,
-      expected_end_date: this.endDateFormControl,
-    });
   }
 
   setStateToAddingActivity(): void {
@@ -130,5 +121,16 @@ export class ProgramContentComponent {
 
   trackByActivityId(index: number, item: Activity): number {
     return item.id;
+  }
+
+  private createNewActivityForm(): void {
+    this.nameFormControl = new FormControl('', [Validators.required]);
+    this.startDateFormControl = new FormControl();
+    this.endDateFormControl = new FormControl();
+    this.newActivityForm = new FormGroup({
+      name: this.nameFormControl,
+      expected_start_date: this.startDateFormControl,
+      expected_end_date: this.endDateFormControl,
+    });
   }
 }
